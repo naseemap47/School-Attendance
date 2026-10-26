@@ -4,6 +4,9 @@ const path = require('path');
 require('dotenv').config();
 
 const { initDb } = require('./db/index.js');
+const { initWhatsAppClient } = require('./services/whatsappClient.js');
+const { startQueueWorker } = require('./services/queueWorker.js');
+
 const authRoutes = require('./routes/auth.js');
 const teachersRoutes = require('./routes/teachers.js');
 const classesRoutes = require('./routes/classes.js');
@@ -38,6 +41,10 @@ app.get('/api/health', (req, res) => {
 const PORT = process.env.PORT || 5000;
 
 if (require.main === module) {
+  // Start services
+  initWhatsAppClient().catch(err => console.error('Failed to init WhatsApp client:', err));
+  startQueueWorker();
+
   app.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}`);
   });
