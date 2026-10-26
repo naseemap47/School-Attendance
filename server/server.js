@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
 require('dotenv').config();
 
 const { initDb } = require('./db/index.js');
@@ -22,7 +23,7 @@ app.use(express.json());
 // Initialize DB
 initDb();
 
-// Routes
+// API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/teachers', teachersRoutes);
 app.use('/api/classes', classesRoutes);
@@ -37,6 +38,16 @@ app.get('/api/health', (req, res) => {
     time: new Date().toISOString()
   });
 });
+
+// Serve frontend static files if client/dist exists
+const clientDistPath = path.join(__dirname, '../client/dist');
+if (fs.existsSync(clientDistPath)) {
+  app.use(express.static(clientDistPath));
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api')) return next();
+    res.sendFile(path.join(clientDistPath, 'index.html'));
+  });
+}
 
 const PORT = process.env.PORT || 5000;
 
