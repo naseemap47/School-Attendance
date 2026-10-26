@@ -3,10 +3,19 @@ const cors = require('cors');
 const path = require('path');
 require('dotenv').config();
 
+const { initDb } = require('./db/index.js');
+const authRoutes = require('./routes/auth.js');
+
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+
+// Initialize DB
+initDb();
+
+// Routes
+app.use('/api/auth', authRoutes);
 
 // Healthcheck
 app.get('/api/health', (req, res) => {
