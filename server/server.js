@@ -5,6 +5,7 @@ require('dotenv').config();
 
 const { initDb } = require('./db/index.js');
 const authRoutes = require('./routes/auth.js');
+const teachersRoutes = require('./routes/teachers.js');
 
 const app = express();
 
@@ -16,6 +17,7 @@ initDb();
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/teachers', teachersRoutes);
 
 // Healthcheck
 app.get('/api/health', (req, res) => {
