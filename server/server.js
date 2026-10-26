@@ -9,6 +9,7 @@ const teachersRoutes = require('./routes/teachers.js');
 const classesRoutes = require('./routes/classes.js');
 const studentsRoutes = require('./routes/students.js');
 const attendanceRoutes = require('./routes/attendance.js');
+const whatsappRoutes = require('./routes/whatsapp.js');
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.use('/api/teachers', teachersRoutes);
 app.use('/api/classes', classesRoutes);
 app.use('/api/students', studentsRoutes);
 app.use('/api/attendance', attendanceRoutes);
+app.use('/api/whatsapp', whatsappRoutes);
 
 // Healthcheck
 app.get('/api/health', (req, res) => {
