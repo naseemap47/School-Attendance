@@ -9,7 +9,7 @@ import AdminDashboard from './pages/admin/AdminDashboard.jsx';
 
 function MainApp() {
   const { user, loading, logout, isAdmin } = useAuth();
-  const [currentView, setCurrentView] = useState('home'); // 'home' | 'class-details' | 'mark-attendance' | 'attendance-reports' | 'admin'
+  const [currentView, setCurrentView] = useState(null); // 'home' | 'class-details' | 'mark-attendance' | 'attendance-reports' | 'admin'
   const [activeClassId, setActiveClassId] = useState(null);
 
   if (loading) {
@@ -30,8 +30,8 @@ function MainApp() {
     }} />;
   }
 
-  // Set default view on initial login if not set
-  const view = currentView === 'home' && isAdmin ? 'admin' : currentView;
+  // Resolve active view: default to 'admin' for admin, 'home' for teacher if not explicitly set
+  const view = currentView !== null ? currentView : (isAdmin ? 'admin' : 'home');
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -47,7 +47,10 @@ function MainApp() {
             <button
               id="nav-admin-btn"
               className={`nav-link ${view === 'admin' ? 'active' : ''}`}
-              onClick={() => setCurrentView('admin')}
+              onClick={() => {
+                setActiveClassId(null);
+                setCurrentView('admin');
+              }}
               style={{ background: 'none', border: 'none' }}
             >
               ⚙️ Admin Panel
@@ -56,7 +59,7 @@ function MainApp() {
 
           <button
             id="nav-classes-btn"
-            className={`nav-link ${view === 'home' ? 'active' : ''}`}
+            className={`nav-link ${view === 'home' || view === 'class-details' || view === 'mark-attendance' || view === 'attendance-reports' ? 'active' : ''}`}
             onClick={() => {
               setActiveClassId(null);
               setCurrentView('home');
@@ -85,6 +88,32 @@ function MainApp() {
           </div>
         </div>
       </nav>
+
+      {/* Admin Mode indicator when viewing teacher workspace */}
+      {isAdmin && view !== 'admin' && (
+        <div style={{
+          background: 'rgba(59, 130, 246, 0.12)',
+          borderBottom: '1px solid rgba(59, 130, 246, 0.3)',
+          padding: '0.5rem 1.5rem',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          fontSize: '0.85rem',
+          color: '#93c5fd'
+        }}>
+          <span>👁️ <strong>Admin Workspace:</strong> Viewing classes & rosters across all school teachers.</span>
+          <button
+            className="btn btn-secondary btn-sm"
+            style={{ fontSize: '0.75rem', padding: '0.2rem 0.6rem' }}
+            onClick={() => {
+              setActiveClassId(null);
+              setCurrentView('admin');
+            }}
+          >
+            ← Return to Admin Panel
+          </button>
+        </div>
+      )}
 
       {/* Main Content View */}
       <main style={{ flex: 1 }}>
