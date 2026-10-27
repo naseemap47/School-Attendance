@@ -84,6 +84,11 @@ function startQueueWorker(customConfig = {}) {
   currentJitterConfig = { ...currentJitterConfig, ...customConfig };
   if (isWorkerRunning) return;
 
+  try {
+    const db = getDb();
+    db.prepare("UPDATE whatsapp_queue SET status = 'pending' WHERE status = 'processing'").run();
+  } catch (_) {}
+
   isWorkerRunning = true;
   runWorkerLoop();
 }

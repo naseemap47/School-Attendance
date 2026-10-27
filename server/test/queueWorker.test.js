@@ -71,4 +71,29 @@ describe('Background WhatsApp Queue Worker', () => {
     const second = db.prepare('SELECT status, sent_at FROM whatsapp_queue WHERE id = 2').get();
     assert.strictEqual(second.status, 'sent');
   });
+
+  test('processNextQueueItem handles undefined WhatsApp response without retrying or failing', async () => {
+    queueWorker.stopQueueWorker();
+
+    // Insert a 3rd item
+    db.prepare(`
+      INSERT INTO whatsapp_queue (student_id, attendance_id, recipient_phone, recipient_name, message_body, status)
+      VALUES (1, 1, '919876543202@c.us', 'Parent 3', 'Notice 3', 'pending')
+    `).run();
+
+    // Mock client returning undefined (modern WhatsApp Web behaviour)
+    whatsappService.setClientInstanceForTesting({
+      sendMessage: async () => undefined
+    }, 'CONNECTED');
+
+    const processed = await queueWorker.processNextQueueItem({ minJitterMs: 0, maxJitterMs: 0 });
+    assert.strictEqual(processed, true);
+
+    const item = db.prepare('SELECT status, retry_count, error_message, sent_at FROM whatsapp_queue WHERE recipient_name = ?').get('Parent 3');
+    assert.strictEqual(item.status, 'sent');
+    assert.strictEqual(item.retry_count, 0);
+    assert.strictEqual(item.error_message, null);
+    assert.ok(item.sent_at !== null);
+  });
 });
+

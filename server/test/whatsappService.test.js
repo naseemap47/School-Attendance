@@ -78,4 +78,37 @@ describe('WhatsApp Client Service & Mock Mode', () => {
     assert.strictEqual(status.status, 'CONNECTED');
     assert.strictEqual(status.connectedNumber, '919876543200');
   });
+
+  test('sendWhatsAppMessage handles undefined return from sendMessage without throwing (WhatsApp Web Msg.get returns undefined)', async () => {
+    let sentToJid = null;
+    let sentText = null;
+    whatsappService.setClientInstanceForTesting({
+      sendMessage: async (jid, text) => {
+        sentToJid = jid;
+        sentText = text;
+        return undefined; // Simulating modern WhatsApp Web behavior
+      }
+    }, 'CONNECTED');
+
+    const res = await whatsappService.sendWhatsAppMessage('919876543299@c.us', 'Absence notification');
+    assert.strictEqual(res.success, true);
+    assert.strictEqual(res.recipient, '919876543299@c.us');
+    assert.strictEqual(res.message, 'Absence notification');
+    assert.strictEqual(res.id, null);
+    assert.strictEqual(sentToJid, '919876543299@c.us');
+    assert.strictEqual(sentText, 'Absence notification');
+  });
+
+  test('sendWhatsAppMessage returns serialized message ID when provided by WhatsApp client', async () => {
+    whatsappService.setClientInstanceForTesting({
+      sendMessage: async (jid, text) => {
+        return { id: { _serialized: 'true_919876543299@c.us_3EB0ABC123' } };
+      }
+    }, 'CONNECTED');
+
+    const res = await whatsappService.sendWhatsAppMessage('919876543299@c.us', 'Absence notification 2');
+    assert.strictEqual(res.success, true);
+    assert.strictEqual(res.id, 'true_919876543299@c.us_3EB0ABC123');
+  });
 });
+

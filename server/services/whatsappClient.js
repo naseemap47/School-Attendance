@@ -120,14 +120,19 @@ function mockConnect(number = '919876543200') {
   return getWhatsAppStatus();
 }
 
+function setClientInstanceForTesting(instance, status = 'CONNECTED') {
+  clientInstance = instance;
+  currentStatus = status;
+}
+
 async function sendWhatsAppMessage(jid, text) {
   if (!clientInstance) {
     await initWhatsAppClient();
   }
 
-  if (isMock) {
+  if (isMock && clientInstance?.isMock) {
     sentMessagesLog.push({ jid, message: text, timestamp: new Date().toISOString() });
-    return { success: true, recipient: jid, message: text, mock: true };
+    return { success: true, id: `mock_${Date.now()}`, recipient: jid, message: text, mock: true };
   }
 
   if (currentStatus !== 'CONNECTED') {
@@ -135,7 +140,8 @@ async function sendWhatsAppMessage(jid, text) {
   }
 
   const result = await clientInstance.sendMessage(jid, text);
-  return { success: true, id: result.id._serialized };
+  const messageId = result?.id?._serialized || result?.id?.id || (result?.id ? String(result.id) : null);
+  return { success: true, id: messageId, recipient: jid, message: text };
 }
 
 async function logoutWhatsApp() {
@@ -161,5 +167,7 @@ module.exports = {
   sendWhatsAppMessage,
   mockConnect,
   logoutWhatsApp,
-  getSentMessagesLog
+  getSentMessagesLog,
+  setClientInstanceForTesting
 };
+
