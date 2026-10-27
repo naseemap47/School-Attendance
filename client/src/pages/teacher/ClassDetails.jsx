@@ -3,7 +3,7 @@ import { api } from '../../services/api.js';
 import AddStudentModal from '../../components/AddStudentModal.jsx';
 import BulkImportModal from '../../components/BulkImportModal.jsx';
 
-export default function ClassDetails({ classId, onNavigateToAttendance, onBack }) {
+export default function ClassDetails({ classId, onNavigateToAttendance, onNavigateToReports, onBack }) {
   const [classItem, setClassItem] = useState(null);
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -82,6 +82,13 @@ export default function ClassDetails({ classId, onNavigateToAttendance, onBack }
             onClick={() => onNavigateToAttendance(classId)}
           >
             📋 Mark Today's Attendance
+          </button>
+          <button
+            id="class-reports-btn"
+            className="btn btn-secondary"
+            onClick={() => onNavigateToReports(classId)}
+          >
+            📊 Reports & History
           </button>
           <button
             id="add-student-btn"

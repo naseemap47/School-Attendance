@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { api } from '../../services/api.js';
 import { useAuth } from '../../context/AuthContext.jsx';
 
-export default function TeacherDashboard({ onSelectClass, onNavigateToAttendance }) {
+export default function TeacherDashboard({ onSelectClass, onNavigateToAttendance, onNavigateToReports }) {
   const { user } = useAuth();
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -135,18 +135,29 @@ export default function TeacherDashboard({ onSelectClass, onNavigateToAttendance
                 </div>
               </div>
 
-              <div style={{ display: 'flex', gap: '0.75rem', paddingTop: '1rem', borderTop: '1px solid var(--border-glass)' }}>
-                <button
-                  id={`mark-att-btn-${cls.id}`}
-                  className="btn btn-primary btn-sm"
-                  style={{ flex: 1 }}
-                  onClick={() => onNavigateToAttendance(cls.id)}
-                >
-                  📋 Take Attendance
-                </button>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', paddingTop: '1rem', borderTop: '1px solid var(--border-glass)' }}>
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <button
+                    id={`mark-att-btn-${cls.id}`}
+                    className="btn btn-primary btn-sm"
+                    style={{ flex: 1 }}
+                    onClick={() => onNavigateToAttendance(cls.id)}
+                  >
+                    📋 Mark Today
+                  </button>
+                  <button
+                    id={`view-reports-btn-${cls.id}`}
+                    className="btn btn-secondary btn-sm"
+                    style={{ flex: 1 }}
+                    onClick={() => onNavigateToReports(cls.id)}
+                  >
+                    📊 Reports
+                  </button>
+                </div>
                 <button
                   id={`view-roster-btn-${cls.id}`}
                   className="btn btn-secondary btn-sm"
+                  style={{ width: '100%', fontSize: '0.8rem' }}
                   onClick={() => onSelectClass(cls.id)}
                 >
                   Manage Roster →

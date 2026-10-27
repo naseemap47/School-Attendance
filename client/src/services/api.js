@@ -65,6 +65,9 @@ export const api = {
     method: 'POST',
     body: JSON.stringify({ date, records })
   }),
+  getAttendanceReport: (classId, date) => apiRequest(`/attendance/${classId}/report?date=${date}`),
+  getMonthlyAttendanceReport: (classId, month) => apiRequest(`/attendance/${classId}/monthly-report?month=${month}`),
+  getAttendanceDates: (classId) => apiRequest(`/attendance/${classId}/dates`),
 
   // WhatsApp (Admin)
   getWhatsAppStatus: () => apiRequest('/whatsapp/status'),

@@ -4,11 +4,12 @@ import Login from './pages/Login.jsx';
 import TeacherDashboard from './pages/teacher/Dashboard.jsx';
 import ClassDetails from './pages/teacher/ClassDetails.jsx';
 import MarkAttendance from './pages/teacher/MarkAttendance.jsx';
+import AttendanceReports from './pages/teacher/AttendanceReports.jsx';
 import AdminDashboard from './pages/admin/AdminDashboard.jsx';
 
 function MainApp() {
   const { user, loading, logout, isAdmin } = useAuth();
-  const [currentView, setCurrentView] = useState('home'); // 'home' | 'class-details' | 'mark-attendance' | 'admin'
+  const [currentView, setCurrentView] = useState('home'); // 'home' | 'class-details' | 'mark-attendance' | 'attendance-reports' | 'admin'
   const [activeClassId, setActiveClassId] = useState(null);
 
   if (loading) {
@@ -106,6 +107,10 @@ function MainApp() {
               setActiveClassId(id);
               setCurrentView('mark-attendance');
             }}
+            onNavigateToReports={(id) => {
+              setActiveClassId(id);
+              setCurrentView('attendance-reports');
+            }}
           />
         )}
 
@@ -115,6 +120,10 @@ function MainApp() {
             onNavigateToAttendance={(id) => {
               setActiveClassId(id);
               setCurrentView('mark-attendance');
+            }}
+            onNavigateToReports={(id) => {
+              setActiveClassId(id);
+              setCurrentView('attendance-reports');
             }}
             onBack={() => {
               setActiveClassId(null);
@@ -126,6 +135,23 @@ function MainApp() {
         {view === 'mark-attendance' && (
           <MarkAttendance
             classId={activeClassId}
+            onNavigateToReports={(id) => {
+              setActiveClassId(id);
+              setCurrentView('attendance-reports');
+            }}
+            onBack={() => {
+              setCurrentView('class-details');
+            }}
+          />
+        )}
+
+        {view === 'attendance-reports' && (
+          <AttendanceReports
+            classId={activeClassId}
+            onNavigateToMarkAttendance={(id) => {
+              setActiveClassId(id);
+              setCurrentView('mark-attendance');
+            }}
             onBack={() => {
               setCurrentView('class-details');
             }}

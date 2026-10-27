@@ -3,7 +3,7 @@ import { api } from '../../services/api.js';
 import AttendanceSummaryBar from '../../components/AttendanceSummaryBar.jsx';
 import ConfirmAttendanceModal from '../../components/ConfirmAttendanceModal.jsx';
 
-export default function MarkAttendance({ classId, onBack }) {
+export default function MarkAttendance({ classId, onNavigateToReports, onBack }) {
   const todayStr = new Date().toISOString().split('T')[0];
   const [selectedDate, setSelectedDate] = useState(todayStr);
   const [classInfo, setClassInfo] = useState(null);
@@ -107,18 +107,31 @@ export default function MarkAttendance({ classId, onBack }) {
           </p>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <label htmlFor="attendance-date" style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
-            Date:
-          </label>
-          <input
-            id="attendance-date"
-            type="date"
-            className="form-input"
-            style={{ width: 'auto' }}
-            value={selectedDate}
-            onChange={(e) => setSelectedDate(e.target.value)}
-          />
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+          {onNavigateToReports && (
+            <button
+              id="view-reports-from-mark-btn"
+              type="button"
+              className="btn btn-secondary btn-sm"
+              onClick={() => onNavigateToReports(classId)}
+            >
+              📊 View Reports & History
+            </button>
+          )}
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <label htmlFor="attendance-date" style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
+              Date:
+            </label>
+            <input
+              id="attendance-date"
+              type="date"
+              className="form-input"
+              style={{ width: 'auto' }}
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+            />
+          </div>
         </div>
       </div>
 
