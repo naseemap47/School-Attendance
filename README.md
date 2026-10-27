@@ -67,7 +67,50 @@ School-Attendance/
 
 ---
 
-## 🚀 Quick Start Guide
+## 🐳 Docker Deployment (Runs Forever & Auto-Starts on Boot)
+
+AttendFlow is fully containerized with Chromium, SQLite, and persistent WhatsApp Web sessions. It is configured with `restart: always`, ensuring that it starts automatically when your PC boots or restarts.
+
+### Running with Docker on any PC:
+
+1. **Clone the repository and enter the directory**:
+   ```bash
+   git clone https://github.com/naseemap47/School-Attendance.git
+   cd School-Attendance
+   ```
+
+2. **(Optional) Configure environment**:
+   ```bash
+   cp .env.example .env
+   # Edit .env if you wish to customize PORT or JWT_SECRET
+   ```
+
+3. **Start the application in background mode**:
+   ```bash
+   docker compose up -d --build
+   ```
+
+4. **Access the web application**:
+   - URL: **`http://localhost:5000`** (or your machine's IP address e.g. `http://192.168.1.100:5000`)
+
+5. **Useful Docker commands**:
+   ```bash
+   # View live logs
+   docker compose logs -f
+
+   # Check container status
+   docker compose ps
+
+   # Stop container
+   docker compose down
+
+   # Restart container
+   docker compose restart
+   ```
+
+---
+
+## 🚀 Local Development (Without Docker)
 
 ### 1. Install Dependencies
 ```bash
