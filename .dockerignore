@@ -1,0 +1,16 @@
+node_modules
+server/node_modules
+client/node_modules
+client/dist
+.git
+.gitignore
+.env
+.env.local
+server/data/*.db
+server/data/*.db-wal
+server/data/*.db-shm
+server/test/*.db
+server/.wwebjs_auth
+server/.wwebjs_cache
+npm-debug.log*
+.DS_Store
