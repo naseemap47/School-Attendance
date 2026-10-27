@@ -10,6 +10,26 @@ let sentMessagesLog = [];
 
 const isMock = process.env.WHATSAPP_MOCK === 'true' || process.env.NODE_ENV === 'test';
 
+function cleanStaleLocks(dir) {
+  try {
+    if (!fs.existsSync(dir)) return;
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
+    for (const entry of entries) {
+      const fullPath = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        cleanStaleLocks(fullPath);
+      } else if (entry.name.startsWith('Singleton')) {
+        try {
+          fs.unlinkSync(fullPath);
+          console.log(`Cleaned stale Chromium lock: ${entry.name}`);
+        } catch (_) {}
+      }
+    }
+  } catch (err) {
+    console.warn('Warning checking stale locks:', err.message);
+  }
+}
+
 async function initWhatsAppClient() {
   if (clientInstance) return clientInstance;
 
@@ -40,6 +60,9 @@ async function initWhatsAppClient() {
   // Real WhatsApp Client using whatsapp-web.js
   const { Client, LocalAuth } = require('whatsapp-web.js');
   const authPath = path.join(__dirname, '..', '.wwebjs_auth');
+
+  // Clean stale Chromium locks left over from previous crashes or host-container shifts
+  cleanStaleLocks(authPath);
 
   clientInstance = new Client({
     authStrategy: new LocalAuth({ dataPath: authPath }),
