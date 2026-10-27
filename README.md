@@ -67,45 +67,78 @@ School-Attendance/
 
 ---
 
-## 🐳 Docker Deployment (Runs Forever & Auto-Starts on Boot)
+## 🐳 Docker Deployment & Cloud / Multi-PC Setup
 
-AttendFlow is fully containerized with Chromium, SQLite, and persistent WhatsApp Web sessions. It is configured with `restart: always`, ensuring that it starts automatically when your PC boots or restarts.
+AttendFlow is fully containerized with Chromium, Node 22, SQLite, and persistent WhatsApp Web sessions. It is configured with `restart: always` to run as a background service and survive system reboots.
 
-### Running with Docker on any PC:
+### Option A: 1-Click Deployment on Any PC / Server (No Source Code Needed)
 
-1. **Clone the repository and enter the directory**:
+On any server or different computer, you do **not** need Node.js, source code, or build tools. You only need Docker installed.
+
+1. **Download the production Compose file**:
    ```bash
-   git clone https://github.com/naseemap47/School-Attendance.git
-   cd School-Attendance
+   curl -O https://raw.githubusercontent.com/naseemap47/School-Attendance/feat/school-attendance-system/docker-compose.prod.yml
    ```
 
-2. **(Optional) Configure environment**:
+2. **Pull image & start the container**:
    ```bash
-   cp .env.example .env
-   # Edit .env if you wish to customize PORT or JWT_SECRET
+   docker compose -f docker-compose.prod.yml up -d
    ```
 
-3. **Start the application in background mode**:
+3. **View live logs to scan the WhatsApp pairing QR code**:
+   ```bash
+   docker compose -f docker-compose.prod.yml logs -f
+   ```
+
+4. **Access the application**:
+   Open browser at: **`http://localhost:5000`** (or your server's public/local IP `http://<SERVER_IP>:5000`).
+
+---
+
+### Option B: Build & Push to Docker Hub from Source
+
+If you made modifications and want to push your own image to Docker Hub:
+
+1. **Log in to Docker Hub**:
+   ```bash
+   docker login
+   ```
+
+2. **Build the production image**:
+   ```bash
+   docker compose build
+   ```
+
+3. **Push to Docker Hub**:
+   ```bash
+   docker compose push
+   ```
+   *(Defaults to `naseemap47/school-attendance:latest`. You can override with `DOCKER_IMAGE=yourusername/school-attendance:latest docker compose push`)*
+
+---
+
+### Option C: Local Development with Docker
+
+If you have cloned the repository and want to run it locally with source-mounted volumes:
+
+1. **Start the application (builds locally)**:
    ```bash
    docker compose up -d --build
    ```
 
-4. **Access the web application**:
-   - URL: **`http://localhost:5000`** (or your machine's IP address e.g. `http://192.168.1.100:5000`)
-
-5. **Useful Docker commands**:
+2. **Useful Docker management commands**:
    ```bash
    # View live logs
    docker compose logs -f
 
-   # Check container status
+   # Check container status & healthcheck
    docker compose ps
-
-   # Stop container
-   docker compose down
 
    # Restart container
    docker compose restart
+
+   # Stop & remove container
+   docker compose down
    ```
 
 ---

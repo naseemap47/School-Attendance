@@ -1,0 +1,29 @@
+services:
+  attendflow:
+    image: ${DOCKER_IMAGE:-naseemap47/school-attendance:latest}
+    container_name: attendflow_app
+    restart: always
+    shm_size: '512mb'
+    ports:
+      - "${PORT:-5000}:5000"
+    environment:
+      - NODE_ENV=production
+      - PORT=5000
+      - JWT_SECRET=${JWT_SECRET:-attendflow_production_jwt_secret_key_change_me}
+      - WHATSAPP_MOCK=${WHATSAPP_MOCK:-false}
+      - PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+    volumes:
+      - attendflow_data:/app/server/data
+      - attendflow_auth:/app/server/.wwebjs_auth
+      - attendflow_cache:/app/server/.wwebjs_cache
+    healthcheck:
+      test: ["CMD-SHELL", "node -e 'fetch(\"http://127.0.0.1:5000/api/health\").then(r => r.ok ? process.exit(0) : process.exit(1)).catch(() => process.exit(1))'"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+volumes:
+  attendflow_data:
+  attendflow_auth:
+  attendflow_cache:
